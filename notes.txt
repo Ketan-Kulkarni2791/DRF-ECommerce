@@ -118,4 +118,30 @@
 -- Then commit the changes.
 -- Then click on Publish Branch.
 
+***************************** Python Black Configuration with VS Code *****************************
+
+-- Install black.
+    >> pip install black
+-- Then let's attach this black to VS Code.
+-- Go to File --> Preferences --> Settings.
+-- Then search for Python. And go to Formatting: Black Path section.
+-- It must be automatically set to black.
+-- Now at the level of .gitignore file, create a new folder called .vscode. And create settings.json file inside it.
+-- Add following code to it :
+    >> {
+            "editor.formatOnSave": true,
+            "python.formatting.provider": "black",
+            "python.formatting.blackArgs": [
+                "--line-length",
+                "88"
+            ],
+            "[python]": {
+                "editor.codeActionsOnSave": {
+                    "source.organizeImports": true
+                }
+            }
+        }
+
+***************************** Linting With Flake8 *****************************
+
 
