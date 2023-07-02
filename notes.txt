@@ -116,5 +116,6 @@
 -- Then go to View --> Command Pallete --> Github: Add Remote and add your repo's url and then add remote 
    repo name (same as it is in github.)
 -- Then commit the changes.
+-- Then click on Publish Branch.
 
 
