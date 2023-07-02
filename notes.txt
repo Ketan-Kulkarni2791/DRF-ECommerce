@@ -144,4 +144,14 @@
 
 ***************************** Linting With Flake8 *****************************
 
-
+-- Install flake8.
+    >> pip install flake8
+-- Then add following code to settings.json file :
+    >>  "python.linting.enabled": true,
+        "python.linting.lintOnSave": true,
+        "python.linting.flake8Enabled": true,
+        "python.linting.flake8Args": [
+            "--max-line-length",
+            "88"
+        ]
+-- Then restart the VS Code in order to refresh everything.
