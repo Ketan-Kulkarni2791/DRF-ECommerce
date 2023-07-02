@@ -155,3 +155,20 @@
             "88"
         ]
 -- Then restart the VS Code in order to refresh everything.
+
+***************************** Creating New Branch *****************************
+
+-- Go to github desktop.
+-- Create new branch - dev-1.0.1
+-- Then select that branch.
+
+***************************** Create and Register A New django App *****************************
+
+-- Create a folder - product - inside main project folder.
+-- Then run the following command :
+    >> python manage.py startapp product ./ECommerce/product
+-- Then delete the tests.py file from the app. Create a folder - product - inside tests folder.
+-- Then register the app in base.py file as follows :
+    >> "ECommerce.product"
+-- Also go to app's apps.py file and change the name to : name = 'ECommerce.product'
+-- Then run the server and check.
