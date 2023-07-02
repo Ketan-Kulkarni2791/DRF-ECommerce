@@ -1,0 +1,120 @@
+-- Create an empty folder and open it in VS code.
+-- Create virtual environment :
+    > virtualenv venv
+-- Activate the virtaul env :
+    > venv\Scripts\activate
+-- Install django :
+    > pip install django
+-- Create a new django project :
+    > django-admin startproject ECommerce
+-- Create a new folder inside 'ECommerce/ECommerce' folder called 'settings'.
+-- Add __init__.py inside this settings folder.
+-- Then move settings.py file inside this settings foldfer and rename it to base.py.
+-- Then in manage.py file, do following changes :
+    >> os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ECommerce.settings.base')
+-- Then cd into ECommerce folder and run the following command :
+    >> python manage.py runserver 8080
+
+***************************** Modularizing Django settings ***************************
+
+-- If server is up and running, add two more files to settings folder - 1. dev.py, 
+   2. prod.py.
+-- Then add following code to dev.py file :
+    >>  from .base import *
+
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
+        }
+-- Then change the setting in manage.py file to dev from base.
+    >> os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ECommerce.settings.dev')
+-- Then check if server is running.
+-- Now let's go to manage.py file, and add following code in order to determine which settings file
+   will execute under which environment.
+    >>  from ECommerce.settings import base
+        if base.DEBUG:
+            os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ECommerce.settings.dev')
+        else:
+            os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ECommerce.settings.prod')
+-- Then add following import in prod.py file and make DEBUG=False in base.py:
+    >> from .base import *
+-- Now if we run the server, we will get following error : 
+    >> CommandError: You must set settings.ALLOWED_HOSTS if DEBUG is False.
+-- This error is occurring because ALLOWED_HOSTS is a security measure against any http attacks.
+-- So let's allow all the hosts in prod.py file :
+    >> ALLOWED_HOSTS = ['*']
+
+***************************** Secret Key Generation *****************************
+
+-- A secret key is generated automatically for us when we create a new project.
+-- But we want to generate our own secret key and keep it secure.
+-- So let's go to python shell :
+    >> python manage.py shell
+-- Now in the browser, go to this link and look for get_random_secret_key() :
+    >> https://github.com/django/django/blob/main/django/core/management/utils.py
+-- Then type following in the shell and hit enter :
+    >> from django.core.management.utils import get_random_secret_key
+    >> print(get_random_secret_key())
+   And following secret key is generated for us :
+    >> csic2xj7b=j8%b(fj+#gf%i-#&t7q31*n883%v3o9rk3z%ptu$
+-- So copy this secret key and add it to SECRET_KEY in base.py.
+-- For the security purpose, remove the secter key from base.py and put it in dev.py and
+   prod.py with different secret keys.
+
+***************************** Recording Dependencies PIP freeze *****************************
+
+-- Listing the installed packages is very useful while replicating the project in
+   different environments.
+-- First ensure if we are in the right directory. We should be at the level of manage.py.
+    >> pip freeze > dev_requirements.txt
+
+***************************** Configuring Env Variables *****************************
+
+-- Here we are going to store our variable outside of our program, and then we are going 
+   it back into our program.
+-- So create a .env file by installing follwoing package :
+    >> pip install python-dotenv
+-- Then create a new file called .env at the level of managew.py file.
+-- Now cut paste the secret key from dev.py settings file top .env and try to run the server. It will throw error.
+-- So do following code in dev.py file.
+    >>  from dotenv import load_dotenv
+        import os
+
+        load_dotenv()
+
+        SECRET_KEY = os.environ.get('SECRET_KEY')
+
+***************************** DRF First Step *****************************
+
+-- Install django rest framework and add it (rest_framework) to base.py installed app.
+    > pip install djangorestframework
+
+***************************** Testing: Pytest First Step *****************************
+
+-- Install the following package and type command 'pytest' in the terminal:
+    >> pip install pytest
+-- Create a new file called pytest.ini at the level of manage.py file. Add following code :
+    >>  [pytest]
+
+        DJANGO_SETTINGS_MODULE = ECommerce.settings.dev
+        python_files = test_*.py
+-- Then create a new folder - tests - inside ECommerce project folder. And create a new file called 
+   test_example.py. Add following code to it :
+   >> def test_example():
+        assert 1 == 1 
+-- Then run the command 'pytest' in terminal. And we can see 1 test passed result.
+-- We can also see one warning : PytestConfigWarning: Unknown config option: DJANGO_SETTINGS_MODULE.
+-- To fix this warning, we have to install pytest-django module.
+
+***************************** Create A New Github Repository *****************************
+
+-- Create a new repo in github called DRF-ECommerce.
+-- Copy the repo url.
+-- Then initialize the repository in VS Code's git section.
+-- Then go to View --> Command Pallete --> Github: Add Remote and add your repo's url and then add remote 
+   repo name (same as it is in github.)
+-- Then commit the changes.
+
+
