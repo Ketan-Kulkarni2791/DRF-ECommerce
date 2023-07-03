@@ -211,3 +211,34 @@
     >> python manage.py makemigrations
     >> python manage.py migrate
 
+
+***************************** Create Django Serializer *****************************
+
+-- What is a serializer ?
+    * Let's say client sent json data to django server. Using that json data, django will grab some data from
+      database. This data will be returned typically in the form of queryset.
+    * When this will be returned from the database, it will be in such a format that django and python can understand
+      and work with. So at this point of time, the format of our data is not compatible with the front-end 
+      technology such as javascript.
+    * So we need to find the way to convert our python objects, querysets or model instances into a format, let's
+      say JSON, so that the front end client can actually work with that data.
+    * So the serializer is going to help support this process. It will convert the complex python data into JSON
+      data so that we can pass it to front-end and it can render that data.
+-- So create a new file called serializers.py in product app. Add following code to it :
+    >>  from rest_framework import serializers
+        from .models import Brand, Category, Product
+
+        class CategorySerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Category
+                fields = "__all__"
+
+        class BrandSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Brand
+                fields = "__all__"
+
+        class ProductSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Product
+                fields = "__all__"
