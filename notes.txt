@@ -172,3 +172,42 @@
     >> "ECommerce.product"
 -- Also go to app's apps.py file and change the name to : name = 'ECommerce.product'
 -- Then run the server and check.
+
+***************************** Create Django Models *****************************
+
+-- There are two tables - product and brand.
+-- One product can have one brand. One brand can have multiple products.
+-- Following will be models for these two tables :
+    >>  class Brand(models.Model):
+            name = models.CharField(max_length=100)
+
+        class Product(models.Model):
+            name = models.CharField(max_length=100)
+            description = models.TextField(blank=True)
+            is_digital = models.BooleanField(default=False)
+            brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
+-- Now there is going to be Many to Many relationship between Product and Category tables.
+-- For this purpose, we are going to use django-mptt app.
+-- What is Modified Preorder Tree Traversal?
+    * MPTT is a technique for storing hierarchical data in a database. 
+    * The aim is to make retrieval operations very efficient.
+-- Install django-mptt. (Modified Preorder Tree Traversal)
+-- So here, we are building category. Say Cloths. And we want to create sub-catogories like party, formal,
+   inners etc. So how to connect a sub-category to main category ? We have to connect the sub-category to the
+   parent category. Also, if parent category is deleted, we don't want to delete sub-categories. So create a 
+   field like following :
+   >> class Category(MPTTModel):
+        name = models.CharField(max_length=100)
+        parent = TreeForeignKey("self", on_delete=models.PROTECT, null=True, blank=True)
+        
+        class MPTTMeta:
+            order_insertion_by = ["name"]
+        
+        def __str__(self) -> str:
+            return self.name
+-- Then create connection between Product and Category table by adding following in Product table:
+    >> category = TreeForeignKey("Category", on_delete=models.SET_NULL, null=True, blank=True)
+-- Now let's migrate the tables.
+    >> python manage.py makemigrations
+    >> python manage.py migrate
+
