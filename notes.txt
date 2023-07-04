@@ -263,3 +263,92 @@
                 serializer = CategorySerializer(self.queryset, many=True)
                 return Response(serializer.data)
 
+
+***************************** Implementing DRF Router *****************************
+
+-- Add following code in main project's urls.py file.
+    >>  from django.contrib import admin
+        from django.urls import include, path
+        from rest_framework.routers import DefaultRouter
+        from .product import views
+
+        router = DefaultRouter()
+        router.register(r"category", views.CategoryViewSet)
+
+        urlpatterns = [path("admin/", admin.site.urls), path("api/", include(router.urls))]
+-- Now let's add data to Category table using admin panel.
+-- Go to admin.py file and register all the tables.
+    >>  from .models import Product, Category, Brand
+
+        admin.site.register(Product)
+        admin.site.register(Category)
+        admin.site.register(Brand)
+-- Then create super user.
+    >> python manage.py createsuperuser
+    >> admin
+    >> admin
+-- Then log into admin panel. And Category-1 as category.
+-- Now hit the above get api again.
+
+
+***************************** API Documentation With Swagger UI *****************************
+
+-- DRF spectacular is used to document your api.
+-- Install drf-spectacular and add it in installed apps list as drf_spectacular.
+    >> pip install drf-spectacular
+-- Then add follwoing code in base.py file:
+    >>  REST_FRAMEWORK = {"DEFAULT_SCHEMA_CLASS": "drf-spectacular.openapi.AutoSchema"}
+        SPECTACULAR_SETTINGS = {"TITLE": "Django DRF ECommerce"}
+-- Then hit following command :
+    >> python manage.py spectacular --file schema.yml
+-- This will generate schema.yml file with following code :
+    >> openapi: 3.0.3
+        info:
+        title: Django DRF ECommerce
+        version: 0.0.0
+        paths:
+        /api/category/:
+            get:
+            operationId: api_category_retrieve
+            description: A simple viewset for viewing categories.
+            tags:
+            - api
+            security:
+            - cookieAuth: []
+            - basicAuth: []
+            - {}
+            responses:
+                '200':
+                description: No response body
+        components:
+        securitySchemes:
+            basicAuth:
+            type: http
+            scheme: basic
+            cookieAuth:
+            type: apiKey
+            in: cookie
+            name: sessionid
+-- Now let's put this file into UI and UI gets working.
+-- So now we will activate some packages which will allow us to show this documentation in front end.
+-- So let's go to urls.py file.
+    >> from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+-- We are going to use swagger UI to render our schema file.
+    >>  path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+        path("api/schema/docs/", SpectacularSwaggerView.as_view(url_name="schema")),
+-- Now let's run the server.
+-- If we hit this url : http://127.0.0.1:8080/api/schema/docs/ ,
+   it will open a swagger UI with schema and category get api info. Click on 'Try it out', then 'Execute'.
+   You will get all the necessary info in that UI.
+-- Now when we ran the command for generating schema.yml file, we are getting following error :
+    >> "Error [CategoryViewSet]: unable to guess serializer. This is graceful fallback handling for APIViews. 
+        Consider using GenericAPIView as view base class, if view is under your control. Either way you may 
+        want to add a serializer_class (or method). Ignoring view for now."
+-- To fix this, add follwoing code to our view :
+    >>  from drf_spectacular.utils import extend_schema
+        @extend_schema(responses=CategorySerializer)
+        def list(self, request):
+-- This will essentially tell schema that which serializer we are utilizing.
+-- Now if we run the server, now the error will be dissappeared and we can see the category schema info in 
+   front-end.
+-- Add this schema.yml file to gitignore file.
