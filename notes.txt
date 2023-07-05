@@ -407,3 +407,17 @@
     >> python manage.py spectacular --file schema.yml
 -- And open the swagger ui.
 -- Then add the products through admin panel. Then check in the swagger ui.
+
+
+***************************** Testing HTML Coverage Report *****************************
+
+-- Install coverage.
+    >> pip install coverage
+-- Then run following command:
+    >> coverage run -m pytest
+-- Then run following command and it will create a index.html:
+    >> coverage html
+-- Then you can open index.html file in browser. And you can see coverage report.
+-- Now install pytest-cov.
+    >> pip install pytest-cov
+-- Then run following command to see the 
