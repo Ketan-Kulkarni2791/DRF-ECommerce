@@ -352,3 +352,58 @@
 -- Now if we run the server, now the error will be dissappeared and we can see the category schema info in 
    front-end.
 -- Add this schema.yml file to gitignore file.
+
+***************************** Implementing Brand *****************************
+
+-- As we have implemented the category, let's go for brand now.
+-- As per our DB structure, we have created ForeignKey of category and brand in product table.
+-- So let's create the brand model/table now.
+-- Let's go to views.py and add following code :
+    >>  class BrandViewSet(viewsets.ViewSet):
+        """A simple viewset for viewing brands."""
+
+        queryset = Brand.objects.all()
+
+        @extend_schema(responses=BrandSerializer)
+        def list(self, request):
+            serializer = BrandSerializer(self.queryset, many=True)
+            return Response(serializer.data)
+-- Then let's go to urls.py and add following code.
+    >> router.register(r"brand", views.BrandViewSet)
+-- Then run the documentation command then run the server:
+    >> python manage.py spectacular --file schema.yml
+-- Now let's add one brand using the admin panel.
+-- Then agin check with the swagger UI. Click on Try it out and then Execute.
+
+
+***************************** Implementing Product *****************************
+
+-- Here Product table is related with Category and Brand table with ForeignKey.
+-- So we have to make slight difference in the serializer.
+-- Let's go to serializers.py file. In order to build the connection between product and brand, we are
+   going to need BrandSerializer.
+-- When we query product table, we have a filed called brand as ForeignKey in it. So we need to serializer
+   brand info as well. That's why we have to add BrandSerializer. And same with the category.
+   >> class ProductSerializer(serializers.ModelSerializer):
+        brand = BrandSerializer()
+        category = CategorySerializer()
+
+        class Meta:
+            model = Product
+            fields = "__all__"
+-- Now let's go to views.py and create a new viewset.
+    >> class ProductViewSet(viewsets.ViewSet):
+        """A simple viewset for viewing products."""
+
+        queryset = Product.objects.all()
+
+        @extend_schema(responses=ProductSerializer)
+        def list(self, request):
+            serializer = ProductSerializer(self.queryset, many=True)
+            return Response(serializer.data)
+-- Then add url in urls.py file.
+    >> router.register(r"product", views.ProductViewSet)
+-- Then run the documentation command then run the server:
+    >> python manage.py spectacular --file schema.yml
+-- And open the swagger ui.
+-- Then add the products through admin panel. Then check in the swagger ui.
